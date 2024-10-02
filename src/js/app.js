@@ -125,7 +125,6 @@ window.addEventListener('load', () => {
 //   }
 
 //вот рабочий вариант 
-
 const sliderCoffe1 = document.querySelector('.coffee__wr-slider-top');
 if (sliderCoffe1) {
     const filterList = sliderCoffe1.querySelector('.sl-prod__filter-list');
@@ -134,35 +133,30 @@ if (sliderCoffe1) {
         try {
             const response = await fetch('https://dev.r18.coffee/api/mainpage/coffee');
             const data = await response.json();
-
-            // Transforming the data directly after fetching
-            const transformedData = Object.entries(data).flatMap(([_, coffee]) => 
-                Object.entries(coffee.OFFERS).map(([_, offer]) => {
-                    const sanitizedPart = offer.NAME ? offer.NAME.replace(/\s+/g, '-') : 'default-part'; 
             
-                    return {
-                        packing: offer.PROPERTY_OBJARKA_VALUE, 
-                        "filter-name": offer.PROPERTY_OBJARKA_VALUE,
-                        id: sanitizedPart,
-                        part: sanitizedPart,
-                        title: offer.NAME,
-                        taste: `Кофе R18: '${offer.NAME}'`, 
-                        region: offer.PROPERTY_REGION_VALUE,
-                        height: offer.PROPERTY_VISOTA_VALUE,
-                        sort: offer.PROPERTY_SORT_VALUE,
-                        processing: offer.PROPERTY_OBRABOTKA_VALUE,
-                        q: offer.PROPERTY_Q_VALUE,
-                        roasting: offer.PROPERTY_OBJARKA_VALUE,
-                        harvest: offer.PROPERTY_YROJAI_VALUE,
-                        weight: "1 кг", 
-                        img: offer.PROPERTY_PICTURES_VALUE_SRC[0], 
-                        link: "#", 
-                        description: `Кофе R18: '${offer.NAME}'` 
-                    };
-                })
-            );
 
-
+            const transformedData = data.OFFERS.map(offer => {
+                return {
+                    packing: offer.packing,
+                    "filter-name": offer["filter-name"],
+                    id: offer.id,
+                    part: offer.part,
+                    title: offer.title,
+                    taste: offer.taste,
+                    region: offer.region,
+                    height: offer.height,
+                    sort: offer.sort,
+                    processing: offer.processing,
+                    q: offer.q,
+                    roasting: offer.roasting,
+                    harvest: offer.harvest,
+                    weight: offer.weight,
+                    img: offer.img,
+                    link: "#",
+                    description: `Кофе R18: '${offer.title}'`
+                };
+            });
+    
             const redrawSlCoffe = new RedrawSlСoffee(sliderCoffe1, transformedData);
             const filter = new Filter(filterList);
             const controllSlCoffe = new ControllSlСoffee(
@@ -172,12 +166,14 @@ if (sliderCoffe1) {
             );
             controllSlCoffe.init();
         } catch (error) {
-            console.error('Error fetching coffee data:', error);
+            console.error('Ошибочка:', error);
         }
     }
 
     fetchCoffeeData();
 }
+
+
 
 // const coffeeSL = document.querySelector('.coffee__wr-slider .sl-p');
 
