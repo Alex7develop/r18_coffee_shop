@@ -133,7 +133,7 @@ if (sliderCoffe1) {
         try {
             const response = await fetch('https://dev.r18.coffee/api/mainpage/coffee');
             const data = await response.json();
-            console.log('Статус ответа', response.status);
+            console.log('Статус ответа который мы заслужили:', response.status);
 
             const transformedData = data.OFFERS.map(offer => {
                 // Преобразуем значение поля 'packing'
@@ -245,7 +245,7 @@ if (sliderCoffe1) {
           article: item.ID,
           title: item.NAME,
           colors: colors.map(mapColorToName),
-          price: `${uniqueOffersArray[0]?.PRICE } р.`,
+          price: `${parseInt(uniqueOffersArray[0]?.PRICE, 10)} р.`,
           composition: uniqueOffersArray
             .map((offer) => offer.PREVIEW_TEXT)
             .filter((v, i, a) => a.indexOf(v) === i),
@@ -337,7 +337,7 @@ if (accessoriesSL) {
           name: '',
           value: ''
         })),
-        price: `${uniqueOffersArray[0]?.PRICE} p.`,
+        price: `${parseInt(uniqueOffersArray[0]?.PRICE, 10)} р.`,
         composition: uniqueOffersArray
           .map((offer) => offer.PREVIEW_TEXT)
           .filter((v, i, a) => a.indexOf(v) === i),
