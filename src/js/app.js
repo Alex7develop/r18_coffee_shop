@@ -57,6 +57,9 @@ import AirDatepicker from 'air-datepicker';
 
 // IMASK
 import IMask from 'imask';
+import { fetchCoffeeData } from './api_bitrix/fetchCoffee';
+import { fetchMerchData } from './api_bitrix/fetchMerch';
+import { fetchAccessoriesData } from './api_bitrix/fetchAccessories.js';
 
 window.addEventListener('load', () => {
   // SLIDER HEAD
@@ -110,169 +113,27 @@ window.addEventListener('load', () => {
   }
 
   // Кофейный слайдер
-//   const sliderCoffe1 = document.querySelector('.coffee__wr-slider-top');
-//   if (sliderCoffe1) {
-//     const filterList = sliderCoffe1.querySelector('.sl-prod__filter-list');
-
-//     const redrawSlCoffe = new RedrawSlСoffee(sliderCoffe1, sliderCoffeeData);
-//     const filter = new Filter(filterList);
-//     const controllSlCoffe = new ControllSlСoffee(
-//       redrawSlCoffe,
-//       filter,
-//       controllBasket.addToBasket
-//     );
-//     controllSlCoffe.init();
-//   }
-
-//вот рабочий вариант 
-const sliderCoffe1 = document.querySelector('.coffee__wr-slider-top');
-if (sliderCoffe1) {
+  const sliderCoffe1 = document.querySelector('.coffee__wr-slider-top');
+  if (sliderCoffe1) {
     const filterList = sliderCoffe1.querySelector('.sl-prod__filter-list');
 
-    async function fetchCoffeeData() {
-        try {
-            const response = await fetch('https://dev.r18.coffee/api/mainpage/coffee');
-            const data = await response.json();
-            console.log('Статус ответа который мы заслужили:', response.status);
-
-            const transformedData = data.OFFERS.map(offer => {
-                // Преобразуем значение поля 'packing'
-                if (offer.packing === "Фильтр-кофе") {
-                    offer.packing = "filter";
-                }
-
-                // Удаляем ненужные поля, если они не нужны
-                delete offer.system_id;
-
-                return {
-                    packing: offer.packing,
-                    "filter-name": offer["filter-name"],
-                    id: offer.id,
-                    part: offer.part,
-                    title: offer.title,
-                    taste: offer.taste,
-                    region: offer.region,
-                    height: offer.height,
-                    sort: offer.sort,
-                    processing: offer.processing,
-                    q: offer.q,
-                    roasting: offer.roasting,
-                    harvest: offer.harvest,
-                    weight: offer.weight,
-                    img: offer.img,
-                    link: "#",
-                    description: `Кофе R18: '${offer.title}'`
-                };
-            });
-
-            // Вывод преобразованных данных в консоль
-            console.log('======>', transformedData);
-
-            // Применение преобразованных данных к слайдеру
-            const redrawSlCoffe = new RedrawSlСoffee(sliderCoffe1, transformedData);
-            const filter = new Filter(filterList);
-            const controllSlCoffe = new ControllSlСoffee(
-                redrawSlCoffe,
-                filter,
-                controllBasket.addToBasket
-            );
-            controllSlCoffe.init();
-        } catch (error) {
-            console.error('Ошибочка:', error);
-        }
-    }
-
-    fetchCoffeeData();
-}
-  // слайдер МЕРЧ с карточками в перспективе
-  // const merchSL = document.querySelector('.merch__wr-slider .sl-p');
-  // if(merchSL) {
-  //     const redrawSLP = new RedrawSLP(merchSL, sliderMerchData);
-  //     const controllSLP = new ControllSLP(redrawSLP, controllBasket.addToBasket);
-  //     controllSLP.init();
-  // }
+    fetchCoffeeData().then((transformedData) => {
+      if (transformedData) {
+        const redrawSlCoffe = new RedrawSlСoffee(sliderCoffe1, transformedData);
+        const filter = new Filter(filterList);
+        const controllSlCoffe = new ControllSlСoffee(
+          redrawSlCoffe,
+          filter,
+          controllBasket.addToBasket
+        );
+        controllSlCoffe.init();
+      }
+    });
+  }
+//Мерч Слайдер 
   const merchSL = document.querySelector('.merch__wr-slider .sl-p');
 
   if (merchSL) {
-    const fetchMerchData = async () => {
-      try {
-        const response = await fetch(
-          'https://thingproxy.freeboard.io/fetch/https://dev.r18.coffee/api/mainpage/merch'
-        );
-
-        console.log('Статус ответа', response.status);
-
-        if (!response.ok) {
-          throw new Error('Ошибочка залетела');
-        }
-
-        const data = await response.json();
-        return transformData(data);
-      } catch (error) {
-        console.error('Что-то не так', error);
-        return null;
-      }
-    };
-
-    const colorMapping = {
-      '000000': { name: 'black', value: '#3F3937' },
-      'ffffff': { name: 'white', value: '#ffffff' },
-    };
-
-    const mapColorToName = (color) => {
-      return colorMapping[color] || { name: 'unknown', value: '#000000' };
-    };
-
-    const transformData = (data) => {
-      return Object.values(data).map((item) => {
-        const uniqueOffers = {};
-        const offers = item.OFFERS;
-
-        for (const offer of offers) {
-          if (!uniqueOffers[offer.ID]) {
-            uniqueOffers[offer.ID] = offer;
-          }
-        }
-
-        const uniqueOffersArray = Object.values(uniqueOffers);
-        const colors = Array.from(
-          new Set(
-            uniqueOffersArray.map((offer) => offer.PROPERTY_COLOR_REF_VALUE)
-          )
-        );
-
-        const transformedItem = {
-          article: item.ID,
-          title: item.NAME,
-          colors: colors.map(mapColorToName),
-          price: `${parseInt(uniqueOffersArray[0]?.PRICE, 10)} р.`,
-          composition: uniqueOffersArray
-            .map((offer) => offer.PREVIEW_TEXT)
-            .filter((v, i, a) => a.indexOf(v) === i),
-          link: 'dev.r18.coffee',
-          description: `Добавлен товар:  '${item.NAME}'`,
-        };
-
-        colors.forEach((color) => {
-          const colorName = mapColorToName(color).name;
-          const isSpecialItem = item.ID === '56';
-
-          transformedItem[colorName] = {
-            img: uniqueOffersArray
-              .filter((offer) => offer.PROPERTY_COLOR_REF_VALUE === color)
-              .flatMap((offer) => offer.PROPERTY_PICTURES_VALUE_SRC)
-              .slice(0, isSpecialItem ? 3 : 2),
-            sizes: uniqueOffersArray
-              .filter((offer) => offer.PROPERTY_COLOR_REF_VALUE === color)
-              .map((offer) => offer.PROPERTY_SIZE_VALUE)
-              .filter((size, index, self) => self.indexOf(size) === index),
-          };
-        });
-
-        return transformedItem;
-      });
-    };
-
     fetchMerchData().then((sliderMerchData) => {
       if (sliderMerchData) {
         const redrawSLP = new RedrawSLP(merchSL, sliderMerchData);
@@ -285,93 +146,22 @@ if (sliderCoffe1) {
     });
   }
 
-  // слайдер АКСЕССУАРЫ с карточками в перспективе
-//   const accessSL = document.querySelector('.accessories__wr-slider .sl-p');
-//   if (accessSL) {
-//     const redrawSLP = new RedrawSLP(accessSL, sliderAccessData);
-//     const controllSLP = new ControllSLP(redrawSLP, controllBasket.addToBasket);
-//     controllSLP.init();
-//   }
-
-const accessoriesSL = document.querySelector('.accessories__wr-slider .sl-p');
-
-if (accessoriesSL) {
-  const fetchAccessoriesData = async () => {
-    try {
-      const response = await fetch(
-        'https://thingproxy.freeboard.io/fetch/https://dev.r18.coffee/api/mainpage/accessories'
-      );
-
-      console.log('Статус ответа', response.status);
-
-      if (!response.ok) {
-        throw new Error('Ошибка при загрузке данных');
-      }
-
-      const data = await response.json();
-      return transformAccessoriesData(data);
-    } catch (error) {
-      console.error('Что-то пошло не так', error);
-      return null;
-    }
-  };
-
-  const transformAccessoriesData = (data) => {
-    return Object.values(data).map((item) => {
-      const uniqueOffers = {};
-      const offers = item.OFFERS;
-
-      for (const offer of offers) {
-        if (!uniqueOffers[offer.ID]) {
-          uniqueOffers[offer.ID] = offer;
-        }
-      }
-
-      const uniqueOffersArray = Object.values(uniqueOffers);
-      const colors = ['black']; 
-
-      const transformedItem = {
-        article: item.ID,
-        title: item.NAME,
-        colors: colors.map(() => ({
-          name: '',
-          value: ''
-        })),
-        price: `${parseInt(uniqueOffersArray[0]?.PRICE, 10)} р.`,
-        composition: uniqueOffersArray
-          .map((offer) => offer.PREVIEW_TEXT)
-          .filter((v, i, a) => a.indexOf(v) === i),
-        link: '#',
-        description: `${item.NAME} ${uniqueOffersArray[0]?.PROPERTY_SIZE_VALUE || ''}`,
-      };
-
-      colors.forEach((color) => {
-        transformedItem[color] = {
-          img: uniqueOffersArray
-            .flatMap((offer) => offer.PROPERTY_PICTURES_VALUE_SRC)
-            .slice(0, 1),
-          sizes: uniqueOffersArray
-            .map((offer) => offer.PROPERTY_SIZE_VALUE)
-            .filter((size, index, self) => self.indexOf(size) === index),
-        };
+//Слайдер аксессуары
+  const accessoriesSL = document.querySelector('.accessories__wr-slider .sl-p');
+  
+  if (accessoriesSL) {
+      fetchAccessoriesData().then((sliderAccessoriesData) => {
+          if (sliderAccessoriesData) {
+              const redrawSLP = new RedrawSLP(accessoriesSL, sliderAccessoriesData);
+              const controllSLP = new ControllSLP(
+                  redrawSLP,
+                  controllBasket.addToBasket
+              );
+              controllSLP.init();
+          }
       });
-
-      return transformedItem;
-    });
-  };
-
-  fetchAccessoriesData().then((sliderAccessoriesData) => {
-    if (sliderAccessoriesData) {
-      const redrawSLP = new RedrawSLP(accessoriesSL, sliderAccessoriesData);
-      const controllSLP = new ControllSLP(
-        redrawSLP,
-        controllBasket.addToBasket
-      );
-      controllSLP.init();
-    }
-  });
-}
-
+  }
+  
   // кнопка прокрутки вверх
   const buttons = document.querySelectorAll('.button-to-top');
   if (buttons.length > 0) buttonToTop(buttons);
@@ -381,8 +171,8 @@ if (accessoriesSL) {
   if (naviHeader) {
     const redrawNav = new RedrawNav(
       naviHeader,
-      '.sl-prod__filter-list',
-    //   sliderCoffeeData
+      '.sl-prod__filter-list'
+      //   sliderCoffeeData
     );
     const controllNav = new ControllNav(redrawNav);
     controllNav.init();
