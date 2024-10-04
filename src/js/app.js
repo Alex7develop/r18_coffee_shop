@@ -133,9 +133,17 @@ if (sliderCoffe1) {
         try {
             const response = await fetch('https://dev.r18.coffee/api/mainpage/coffee');
             const data = await response.json();
-            
+            console.log('Статус ответа', response.status);
 
             const transformedData = data.OFFERS.map(offer => {
+                // Преобразуем значение поля 'packing'
+                if (offer.packing === "Фильтр-кофе") {
+                    offer.packing = "filter";
+                }
+
+                // Удаляем ненужные поля, если они не нужны
+                delete offer.system_id;
+
                 return {
                     packing: offer.packing,
                     "filter-name": offer["filter-name"],
@@ -156,7 +164,11 @@ if (sliderCoffe1) {
                     description: `Кофе R18: '${offer.title}'`
                 };
             });
-    
+
+            // Вывод преобразованных данных в консоль
+            console.log('======>', transformedData);
+
+            // Применение преобразованных данных к слайдеру
             const redrawSlCoffe = new RedrawSlСoffee(sliderCoffe1, transformedData);
             const filter = new Filter(filterList);
             const controllSlCoffe = new ControllSlСoffee(
@@ -172,6 +184,7 @@ if (sliderCoffe1) {
 
     fetchCoffeeData();
 }
+
 
 
 

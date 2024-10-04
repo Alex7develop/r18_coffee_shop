@@ -608,6 +608,7 @@ export default class RedrawSlСoffee {
         // выбор типа кофе для фильтра(зерно или какой-то помол)
         if(packing === 'filter') {
             const arrText = ['Зерно', 'Эспрессо', 'Капельная кофеварка', 'Турка'];
+            const arrTextEn = ['seed', 'espresso', 'drip', 'turk'];
 
             const radioForm = this.createEl('form', ['sl-prod__radio-form']);
 
@@ -616,7 +617,7 @@ export default class RedrawSlСoffee {
             for(let i = 0; i < 4; i += 1) {
                 const radioItem = this.createEl('li', ['sl-prod__radio-item']);
 
-                const label = this.createEl('label', ['sl-prod__radio-label']);
+                const label = this.createEl('label', ['sl-prod__radio-label', `sl-prod__radio-label-${arrTextEn[i]}`]);
 
                 const radioButton = this.createEl('input', ['sl-prod__radio-input']);
                 radioButton.type = 'radio';
@@ -624,10 +625,15 @@ export default class RedrawSlСoffee {
                 radioButton.value = arrText[i];
                 if(i === 0) radioButton.checked = true;
 
+                const radioButtonCustomBack = this.createEl('span', ['sl-prod__radio-input-cust-back']);
+                const radioButtonCustomBody = this.createEl('span', ['sl-prod__radio-input-cust-body']);
+                radioButtonCustomBack.append(radioButtonCustomBody);
+
                 const radioText = this.createEl('span', ['sl-prod__radio-text']);
                 radioText.textContent = arrText[i];
 
                 label.append(radioButton);
+                label.append(radioButtonCustomBack);
                 label.append(radioText);
 
                 radioItem.append(label);
