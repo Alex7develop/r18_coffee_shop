@@ -3,33 +3,45 @@ export async function fetchCoffeeData() {
     const response = await fetch('https://dev.r18.coffee/api/mainpage/coffee');
     const data = await response.json();
     console.log('Статус ответа который мы заслужили:', response.status);
+    console.log('Data received:', data);
 
-    const transformedData = data.OFFERS.map((offer) => {
-      if (offer.packing === 'Фильтр-кофе') {
-        offer.packing = 'filter';
-      }
-      delete offer.system_id;
+    const transformedData = Object.values(data.OFFERS).flatMap((offersArray) => 
+      offersArray.map((offer) => {
+        if (offer.packing === 'Фильтр-кофе') {
+          offer.packing = 'filter';
+        }
 
-      return {
-        packing: offer.packing,
-        'filter-name': offer['filter-name'],
-        id: offer.id,
-        part: offer.part,
-        title: offer.title,
-        taste: offer.taste,
-        region: offer.region,
-        height: offer.height,
-        sort: offer.sort,
-        processing: offer.processing,
-        q: offer.q,
-        roasting: offer.roasting,
-        harvest: offer.harvest,
-        weight: offer.weight,
-        img: offer.img,
-        link: '#',
-        description: `Кофе R18: '${offer.title}'`,
-      };
-    });
+        offer.packing = offer.packing.replace(/\s+/g, '-'); 
+
+        delete offer.system_id;
+
+        const transformedOffer = {
+          packing: offer.packing,
+          'filter-name': offer['filter-name'],
+          id: offer.id,
+          part: offer.part,
+          title: offer.title,
+          taste: offer.taste,
+          region: offer.region,
+          height: offer.height,
+          sort: offer.sort,
+          processing: offer.processing,
+          q: offer.q,
+          roasting: offer.roasting,
+          harvest: offer.harvest,
+          weight: offer.weight,
+          img: offer.img,
+          link: '#',
+          description: `Кофе R18: '${offer.title}'`,
+        };
+
+        if (offer.packing === 'Дрип-пакет' && offer.main_offer_id) {
+          transformedOffer.main_offer_id = offer.main_offer_id;
+        }
+
+        return transformedOffer;
+      })
+    );
 
     console.log('Вот тут готовый вариант ======>', transformedData);
 
