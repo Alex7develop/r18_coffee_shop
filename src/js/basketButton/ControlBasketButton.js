@@ -14,9 +14,15 @@ export default class ControllBasketButton extends ApiModals {
         this.mask;
     }
 
-    init() {
-        this.registerEvents(); 
-        this.redraw.redrawIconAmount();
+    init() {  
+        // this.registerEvents();           // отключен весь функционал по корзине формирование и тд
+        // this.redraw.redrawIconAmount();
+
+        // подсвечиваем иконку при заходе на страницу корзина
+        const path = location.pathname;
+        if(path.includes('basket') || path.includes('place-an-order')) {
+            this.redraw.redrawIconBasket();
+        }
     }
 
     registerEvents() {
@@ -127,7 +133,7 @@ export default class ControllBasketButton extends ApiModals {
                 this.clearLocalStorage();
 
                 this.redraw.redrawIconAmount()
-            })()
+            })() 
         }
     }
 

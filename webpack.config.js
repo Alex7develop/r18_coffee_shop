@@ -130,6 +130,33 @@ module.exports = {
           // },
           scriptLoading: 'blocking', // defer | module. можно также указать inject: 'body' скрипт будет в конце body но с defer
         }),
+        new HtmlWebPackPlugin({
+          // title: '....' // здесь можно указать title конкретной страницы
+          template: './src/pug/basket.pug',
+          filename: './basket.html',   // куда компилировать
+          // minify: {
+          //   html: false // отключаем минификацию html, еще есть версия minify: false
+          // },
+          scriptLoading: 'blocking', // defer | module. можно также указать inject: 'body' скрипт будет в конце body но с defer
+        }),
+        new HtmlWebPackPlugin({
+          // title: '....' // здесь можно указать title конкретной страницы
+          template: './src/pug/place-an-order.pug',
+          filename: './place-an-order.html',   // куда компилировать
+          // minify: {
+          //   html: false // отключаем минификацию html, еще есть версия minify: false
+          // },
+          scriptLoading: 'blocking', // defer | module. можно также указать inject: 'body' скрипт будет в конце body но с defer
+        }),
+        new HtmlWebPackPlugin({
+          // title: '....' // здесь можно указать title конкретной страницы
+          template: './src/pug/change-password.pug',
+          filename: './change-password.html',   // куда компилировать
+          // minify: {
+          //   html: false // отключаем минификацию html, еще есть версия minify: false
+          // },
+          scriptLoading: 'blocking', // defer | module. можно также указать inject: 'body' скрипт будет в конце body но с defer
+        }),
         new miniCss({
             filename: 'css/style.css',
         }),
@@ -188,6 +215,7 @@ module.exports = {
             { from: 'src/img/content/accessories-temper-content.webp', to: 'img/content' },
             { from: 'src/img/content/accessories-thermometer-motta-content.webp', to: 'img/content' },
 
+            { from: 'src/files/Политика_в_отношении_обработки_персональных_данных_R18.pdf', to: 'files/Политика_в_отношении_обработки_персональных_данных_R18.pdf' },
             { from: 'src/files/conditions-ctm.pdf', to: 'files/conditions-ctm.pdf' },
             { from: 'src/files/price.pdf', to: 'files/price.pdf' },
 
@@ -201,11 +229,13 @@ module.exports = {
             { from: 'src/modals-html/__modal-log-reg.html', to: './__modal-log-reg.html' },
             { from: 'src/modals-html/__modal-login.html', to: './__modal-login.html' },
             { from: 'src/modals-html/__modal-recover.html', to: './__modal-recover.html' },
+            { from: 'src/modals-html/__modal-recover-success.html', to: './__modal-recover-success.html' },
             { from: 'src/modals-html/__modal-registration.html', to: './__modal-registration.html' },
             { from: 'src/modals-html/__modal-basket.html', to: './__modal-basket.html' },
             { from: 'src/modals-html/__modal-order-successfully.html', to: './__modal-order-successfully.html' },
             { from: 'src/modals-html/__modal-failed.html', to: './__modal-failed.html' },
-            
+            { from: 'src/modals-html/__modal-code.html', to: './__modal-code.html' },
+
             { from: 'src/robots/robots.txt', to: './robots.txt' },
             { from: 'src/robots/sitemap.xml', to: './sitemap.xml' },
           ],

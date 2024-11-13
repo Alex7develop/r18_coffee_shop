@@ -5,13 +5,13 @@ export async function fetchCoffeeData() {
     console.log('Статус ответа который мы заслужили:', response.status);
     console.log('Data received:', data);
 
-    const transformedData = Object.values(data.OFFERS).flatMap((offersArray) => 
+    const transformedData = Object.values(data.OFFERS).flatMap((offersArray) =>
       offersArray.map((offer) => {
         if (offer.packing === 'Фильтр-кофе') {
           offer.packing = 'filter';
         }
 
-        offer.packing = offer.packing.replace(/\s+/g, '-'); 
+        offer.packing = offer.packing.replace(/\s+/g, '-');
 
         delete offer.system_id;
 

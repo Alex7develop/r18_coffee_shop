@@ -14,7 +14,7 @@
     align-items: center;
     justify-content: center;
 
-    overflow: auto;
+    overflow: auto; 
     z-index: 1000000;
 }
 
@@ -105,6 +105,7 @@
     outline: 0;
     border-bottom: 1px solid #fff;
     color: #fff;
+    caret-color: #fff;
 }
 
 .modal__input::placeholder {
@@ -113,6 +114,31 @@
     font-weight: 400;
 
     color: #fff;
+}
+
+.modal__input_required {
+    background-image: url(../svg/profile__required-star.svg);
+    background-repeat: no-repeat;
+    background-size: auto 17.5%;
+}
+
+.modal__input_required[name="surname"] {
+    background-position: left 23.5% top 0.6vw;
+}
+.modal__input_required[name="name"] {
+    background-position: left 13.1% top 0.6vw;
+}
+.modal__input_required[name="phone"] {
+    background-position: left 22.5% top 0.6vw;
+}
+.modal__input_required[name="email"] {
+    background-position: left 17% top 0.6vw;
+}
+.modal__input_required[name="password"] {
+    background-position: left 20% top 0.6vw;
+}
+.modal__input_required[name="code"] {
+    background-position: left 12% top 0.6vw;
 }
 
 .modal__text {
@@ -180,7 +206,7 @@
     justify-content: center;
 }
 
-.modal-acc-deleted-text {
+.modal-acc-deleted__text {
     width: 69%;
 }
 /* END АККАУНТ ПОЛЬЗОВАТЕЛЯ УСПЕШНО УДАЛЕН */
@@ -194,7 +220,7 @@
     width: 26.04vw;
 }
 
-.modal-profile-edited-text {
+.modal-profile-edited__text {
     margin-top: 4.06vw;
     margin-bottom: 11.51vw;
 }
@@ -240,8 +266,8 @@
     margin: 0 auto;
 
     font-family: 'SofiaSans';
-    font-size: '0.83vw';
-    font-weight: 400;
+    font-size: 0.83vw;
+    font-weight: 300;
 
     color: #fff;
 
@@ -269,6 +295,7 @@
 /* START ОКНО ВОССТАНОВЛЕНИЕ ПАРОЛЯ */
 .modal-recover {
     width: 26.3%;
+    padding-bottom: 7.40vw;
 }
 
 .modal-recover__text {
@@ -294,16 +321,107 @@
 /* ------------------==============================------------------- */
 
 
+/* START ОКНО ВОССТАНОВЛЕНИЕ ПАРОЛЯ РЕЗУЛЬТАТ */
+.modal-recover-succ {
+    width: 26.3%;
+    padding-bottom: 7.40vw;
+}
+
+.modal-recover-succ__text {
+    width: 77%;
+    margin-top: 1.67vw;
+}
+/* END ОКНО ВОССТАНОВЛЕНИЕ ПАРОЛЯ РЕЗУЛЬТАТ */
+
+
+/* ------------------==============================------------------- */
+
 /* START ОКНО РЕГИСТРАЦИЯ */
 .modal-reg {
     width: 26.3%;
+    margin-top: 4vw;
+}
+
+.modal-reg__pass-rules {
+    display: flex;
+    margin-top: 0.63vw;
+    flex-direction: column;
+
+    font-family: "SofiaSans";
+    font-size: 0.63vw;
+    font-weight: 400;
+
+    color: #FFF;
+}
+
+.modal__wr-checkbox {
+    margin-top: 1.35vw;
+    align-self: flex-start;
+}
+
+.modal__label-checkbox {
+    cursor: pointer;
+}
+
+.modal__checkbox {
+    display: none;
+}
+
+.modal__checkbox-text {
+    display: flex;
+    gap: 0.47vw;
+    align-items: end;
+
+    font-family: "SofiaSans";
+    font-size: 0.63vw;
+    font-weight: 400;
+    text-align: center;
+    user-select: none;
+    
+    color: #FFF;
+}
+
+.modal__checkbox-text::before {
+    content: "";
+
+    display: inline-block;
+    width: 1.30vw;
+    height: 1.30vw;
+
+    background-color: #fff;
+    border-radius: 0.21vw;
+}
+
+.modal__label-checkbox_invalid + .modal__checkbox-text {
+    color: #FF7C7C;
+}
+
+.modal__label-checkbox_invalid + .modal__checkbox-text::before {
+    background-color: #FF7C7C;
+}
+
+.modal__checkbox:checked + .modal__checkbox-text::before {
+    background-image: url(../svg/check-mark-address-place-order.svg);
+    background-repeat: no-repeat;
+    background-size: 62% auto;
+    background-position: center;
+}
+
+.modal-reg__wr-icon-pdf {
+    margin-top: 1.30vw;
+}
+
+.modal-reg__link-icon-pdf {
+    display: block;
+    height: 3.49vw;
+    width: 3.49vw;
 }
 
 .modal-reg__wr-battons {
     display: flex;
     width: 70%;
-    margin-top: 4.22vw;
-    margin-bottom: 4.58vw;
+    margin-top: 2.34vw;
+    margin-bottom: 3.13vw;
 
     justify-content: center;
 }
@@ -317,147 +435,41 @@
 /* ------------------==============================------------------- */
 
 
-/* START ОКНО BASKET */
-.wrapper-modal__basket {
-    padding-top: 2vw;
-    padding-bottom: 2vw;
 
-    align-items: flex-start;
+/* START ОКНО КОД ПОДТВЕРЖДЕНИЯ */
+.modal-code {
+    width: 26.3%;
+    padding-bottom: 4.58vw;
 }
 
-.modal-basket {
-    width: 26%;
+.modal-code__text {
+    margin-top: 1.93vw;
 }
 
-.modal-basket__wr-title {
-    margin-top: 0.78vw;
+.modal-code__wr-code-repeate {
+    margin-top: 0.47vw;
 }
 
-.modal-basket__title {
+.modal-code__code-repeate {
     font-family: "SofiaSans";
-    font-size: 1.25vw;
-    font-weight: 700;
-
-    color: #F1551C;
-}
-
-.modal-basket__goods-list {
-    display: flex;
-    width: 83.2%;
-    height: 22vw;
-    margin-top: 3.33vw;
-    gap: 1.09vw;
-
-    scrollbar-width: thin;
-    scrollbar-color: #d5cbc6 #726B68;
-
-    flex-direction: column;
-
-    overflow: auto;
-}
-
-.modal-basket__goods-item {
-    display: flex;
-    gap: 1.56vw;
-
-    justify-content: space-between;
-    align-items: center;
-}
-
-.modal-basket__goods-content {
-    display: flex;
-    gap: 0.52vw;
-
-    align-items: center;
-}
-
-.modal-basket__goods-img {
-    width: 2.86vw;
-    height: 3.23vw;
-
-    > img {
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
-        object-position: center;
-    }
-}
-
-.modal-basket__goods-description {
-    > p {
-        font-family: "SofiaSans";
-        font-size: 0.73vw;
-        font-weight: 400;
-
-        color: #FFF;
-    }
-
-    > p:first-child {
-        font-weight: 700;
-    }
-}
-
-.modal-basket__goods-amount {
-    display: flex;
-    height: 1.15vw;
-    gap: 0.26vw;
-}
-
-.modal-basket__goods-amount-button {
-    display: flex;
-    width: 1.56vw;
-
-    font-family: "SofiaSans";
-    font-size: 1.04vw;
+    font-size: 0.83vw;
     font-weight: 400;
-
-    color: #FFF;
-    border: 1px solid #FFF;
-    background: #F1551C;
-
-    align-items: center;
-    justify-content: center;
-
-    user-select: none;
-    cursor: pointer;
-}
-
-.modal-basket__goods-amount-button[data-type="decrement"]::before {
-    content: "-";
-}
-
-.modal-basket__goods-amount-button[data-type="increment"]::before {
-    content: "+";
-}
-
-.modal-basket__goods-amount-num {
-    width: 2.08vw;
-
-    font-family: "SofiaSans";
-    font-size: 0.73vw;
-    font-weight: 400;
-    text-align: center;
     
-    color: #726B68;
-    border: 1px solid #FFF;
-    background: #FFF;
-
-    user-select: none;
+    color: #FFF;
 }
 
-.modal-basket__wr-battons {
+.modal-code__wr-battons {
     display: flex;
-    width: 70%;
-    margin-top: 4.69vw;
-    margin-bottom: 2.03vw;
+    width: 100%;
+    margin-top: 2.76vw;
 
     justify-content: center;
 }
 
-.modal-basket__button {
-    width: 72.2%;
+.modal-code__button {
+    width: 50%;
 }
-/* END ОКНО BASKET */
+/* END ОКНО КОД ПОДТВЕРЖДЕНИЯ */
 
 
 /* ------------------==============================------------------- */
@@ -573,15 +585,40 @@
 @media(max-width: 1200px) {
     .modal__form {
         width: 88.7%;
-        gap: 6.67vw;
+        gap: 2.67vw;
     }
 }
 
 @media(max-width: 1200px) {
     .modal__input {
-        padding: 3.20vw 4vw;
+        padding: 0.80vw 4vw;
     
         font-size: 3.47vw;
+    }
+}
+
+@media(max-width: 1200px) {
+    .modal__input_required {
+        background-size: auto 20.5%;
+    }
+
+    .modal__input_required[name="surname"] {
+        background-position: left 25.5% top 0.6vw;
+    }
+    .modal__input_required[name="name"] {
+        background-position: left 14.8% top 0.6vw;
+    }
+    .modal__input_required[name="phone"] {
+        background-position: left 24% top 0.6vw;
+    }
+    .modal__input_required[name="email"] {
+        background-position: left 18.7% top 0.6vw;
+    }
+    .modal__input_required[name="password"] {
+        background-position: left 21.7% top 0.6vw;
+    }
+    .modal__input_required[name="code"] {
+        background-position: left 14% top 0.6vw;
     }
 }
 
@@ -651,7 +688,7 @@
 }
 
 @media(max-width: 1200px) {
-    .modal-acc-deleted-text {
+    .modal-acc-deleted__text {
         width: 86%;
     }
 }
@@ -664,7 +701,7 @@
 /* START АККАУНТ ПОЛЬЗОВАТЕЛЯ УСПЕШНО ОТРЕДАКТИРОВАН */
 
 @media(max-width: 1200px) {
-    .modal-profile-edited-text {
+    .modal-profile-edited__text {
         margin-top: 9.33vw;
         margin-bottom: 43.20vw;
     }
@@ -730,6 +767,7 @@
 @media(max-width: 1200px) {
     .modal-recover__text {
         margin-top: 8vw;
+        padding-bottom: 9.07vw;
     }
 }
 
@@ -750,117 +788,126 @@
 /* ------------------==============================------------------- */
 
 
-/* START ОКНО ВОССТАНОВЛЕНИЕ ПАРОЛЯ */
+/* START ОКНО ВОССТАНОВЛЕНИЕ ПАРОЛЯ РЕЗУЛЬТАТ */
 @media(max-width: 1200px) {
-    .modal-reg__text {
+    .modal-recover-succ__text {
         margin-top: 8vw;
+        padding-bottom: 17.07vw;
     }
 }
-
-@media(max-width: 1200px) {
-    .modal-reg__wr-battons {
-        margin-top: 15.20vw;
-        margin-bottom: 8.27vw;
-    }
-}
-@media(max-width: 1200px) {
-    .modal-reg__button {
-        width: 57.2%;
-    }
-}
-/* END ОКНО ВОССТАНОВЛЕНИЕ ПАРОЛЯ */
+/* END ОКНО ВОССТАНОВЛЕНИЕ ПАРОЛЯ РЕЗУЛЬТАТ */
 
 
 /* ------------------==============================------------------- */
 
 
-/* START ОКНО BASKET */
+/* START ОКНО РЕГИСТРАЦИЯ */
 @media(max-width: 1200px) {
-    .modal-basket__wr-title {
-        margin-top: 8vw;
-    }
-    
-}
-
-@media(max-width: 1200px) {
-    .modal-basket__title {
-        font-size: 4.80vw;
+    .modal-reg {
+        margin-top: 0;
     }
 }
 
 @media(max-width: 1200px) {
-    .modal-basket__goods-list {
-        width: 88.7%;
-        height: 107vw;
-        margin-top: 13.87vw;
-        gap: 7.73vw;
+    .modal-reg__pass-rules {
+        margin-top: 2.93vw;
+
+        font-size: 2.67vw;
     }
 }
 
 @media(max-width: 1200px) {
-    .modal-basket__goods-item {
-        gap: 2.93vw;
+    .modal__wr-checkbox {
+        margin-top: 9vw;
     }
 }
 
 @media(max-width: 1200px) {
-    .modal-basket__goods-content {
+    .modal__checkbox-text {
         gap: 2.67vw;
+
+        font-size: 2.67vw;
     }
 }
 
 @media(max-width: 1200px) {
-    .modal-basket__goods-img {
-        width: 11.47vw;
+    .modal__checkbox-text::before {
+        height: 5.33vw;
+        width: 5.33vw;
+
+        border-radius: 1.07vw;
+    }
+}
+
+@media(max-width: 1200px) {
+    .modal-reg__wr-icon-pdf {
+        margin-top: 4.80vw;
+    }
+}
+
+@media(max-width: 1200px) {
+    .modal-reg__link-icon-pdf {
         height: 13.07vw;
+        width: 13.07vw;
+    }
+}
+ 
+@media(max-width: 1200px) {
+    .modal-reg__wr-battons {
+        margin-top: 7.20vw;
+        margin-bottom: 8.27vw;
     }
 }
 
 @media(max-width: 1200px) {
-    .modal-basket__goods-description {
-        > p {
-            font-size: 2.93vw;
-        }
-    } 
+    .modal-reg__button {
+        width: 57.2%;
+    }
 }
+/* END ОКНО РЕГИСТРАЦИЯ */
 
+
+/* ------------------==============================------------------- */
+
+
+/* START ОКНО КОД ПОДТВЕРЖДЕНИЯ */
 @media(max-width: 1200px) {
-    .modal-basket__goods-amount {
-        height: 7.47vw;
-        gap: 1.33vw;
+    .modal-code {
+        width: 26.3%;
+        padding-bottom: 9.33vw;
     }
 }
 
 @media(max-width: 1200px) {
-    .modal-basket__goods-amount-button {
-        width: 9.33vw;
-    
-        font-size: 5.33vw;
+    .modal-code__text {
+        margin-top: 12.53vw;
     }
 }
 
 @media(max-width: 1200px) {
-    .modal-basket__goods-amount-num {
-        width: 12.53vw;
-
-        font-size: 3.73vw;
+    .modal-code__wr-code-repeate {
+        margin-top: 1vw;
     }
 }
 
 @media(max-width: 1200px) {
-    .modal-basket__wr-battons {
-        width: 100%;
-        margin-top: 27.73vw;
-        margin-bottom: 17.60vw;
+    .modal-code__code-repeate {
+        font-size: 2.93vw;
     }
 }
 
 @media(max-width: 1200px) {
-    .modal-basket__button {
-        width: 83.4%;
+    .modal-code__wr-battons {
+        margin-top: 10.93vw;
     }
 }
-/* END ОКНО BASKET */
+
+@media(max-width: 1200px) {
+    .modal-code__button {
+        width: 40%;
+    }
+}
+/* END ОКНО КОД ПОДТВЕРЖДЕНИЯ */
 
 
 /* ------------------==============================------------------- */
