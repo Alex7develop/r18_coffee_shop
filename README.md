@@ -1,15 +1,16 @@
+/auth/index.php?change_password=yes&lang=ru&USER_CHECKWORD=ng0i0q22p5e9n556damq5h4v1omoy2co&USER_LOGIN=ddudarev%40alephtrade.com
+
+{
+    USER_CHECKWORD: ng0i0q22p5e9n556damq5h4v1omoy2co,
+    USER_LOGIN: ddudarev@40alephtrade.com,
+    pass: qwerty,
+    confirmed_pass: qwerty,
+}
+ 
+## написать Диме что геокодер не используется 
+## доделать кнопку подтвердить
+## поменять поле для валидации
 
 
-! В local в basket уже лежит товар
-выводить заказ в корзину -- выводить заказ в консоль
 
-ОСТАНОВИЛСЯ
-наполняю корзину
 
-Нужно СДЕЛАТЬ
-- изменение количества из корзины
-- при указании количества 0 в корзине, удалять товар
-- добавить в JSON description для товаров для отображения в корзине.
-- добавить сбор description при добавлении товара в корзину
-
-- снять выделение с иконки корзина и убрать и очистить количество

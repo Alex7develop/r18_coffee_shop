@@ -10,7 +10,7 @@ export default class ControllPlaceOrder {
 
     init() {
         this.registerEvents();
-
+        
         (async () => {
             const data = await this.api.read();
 
@@ -20,10 +20,22 @@ export default class ControllPlaceOrder {
                         case 'PVZ' :
                             point.color = 'green';
                             point.title = 'ПВЗ';
+                            point.icon = {
+                                iconLayout : 'default#image',
+                                iconImageHref : './img/icon/cdek-pvz-icon.png',
+                                iconImageSize: [26, 34],
+                                iconImageOffset: [-5, -38]
+                            }
                         break;
                         case 'POSTAMAT' :
                             point.color = 'violet';
                             point.title = 'ПОСТАМАТ';
+                            point.icon = {
+                                iconLayout : 'default#image',
+                                iconImageHref : './img/icon/cdek-postamat-icon.png',
+                                iconImageSize: [26, 34],
+                                iconImageOffset: [-5, -38]
+                            }
                     };
                     
                     return point;
@@ -31,7 +43,9 @@ export default class ControllPlaceOrder {
 
                 this.d.initMap(points)
             };
-        })()
+        })();
+
+        // this.d.initSuggest();
     }
  
     registerEvents() {
@@ -69,6 +83,11 @@ export default class ControllPlaceOrder {
             this.d.choiceReceivingCdek(type);
         }
 
+        // подтверждение выбранного адреса с пвз
+        if(e.target.closest('.place-order__cdek-confirm-button')) {
+            this.d.confirmAddressPVZ();
+        }
+
         // выбор способа оплаты
         if(e.target.closest('.place-order__payment-type')) {
             const element = e.target.closest('.place-order__payment-type');
@@ -100,26 +119,33 @@ export default class ControllPlaceOrder {
                 let form;
                 if(activeType !== 'cdek') {
                     form = this.d.currentReceivingContent.querySelector('form');
+
+                    let inputs;
+                    if(form) {
+                        inputs = form.querySelectorAll('input[type="text"]');
+                        
+                        [...inputs].forEach(input => {
+                            let validation;
+                            if(input.name !== 'intercom') {
+                                validation = this.validationInputText(input);
+
+                                if(!validation) this.d.setInvalidInputText(input);
+                            }
+                        });
+                    }
                 }
 
+                // валидация выбран ли адрес пвз, если активен способ получения ПВЗ
                 if(activeType === 'cdek') {
-                    form = this.d.currentReceivingContentCdek.querySelector('form');
+                    // form = this.d.currentReceivingContentCdek.querySelector('form');
+                    const result = this.validationAddressPVZ(this.d.confirmedAddressPVZ);
+                    console.log(this.d.confirmedAddressPVZ)
+                    console.log('this.d.confirmedAddressPVZ.textContent', this.d.confirmedAddressPVZ.textContent)
+                    console.log('result', result)
+                    if(!result) this.d.setInvalidAddressPVZ();
                 }
 
-                let inputs;
-                if(form) {
-                    inputs = form.querySelectorAll('input[type="text"]');
-                    
-                    [...inputs].forEach(input => {
-                        let validation;
-                        if(input.name !== 'intercom') {
-                            validation = this.validationInputText(input);
-
-                            if(!validation) this.d.setInvalidInputText(input);
-                        }
-
-                    });
-                }
+                
             }
 
             // СПОСОБ ОПЛАТЫ
@@ -170,5 +196,9 @@ export default class ControllPlaceOrder {
         result = value !== '' ? true : false;
 
         return result;
+    }
+
+    validationAddressPVZ(element) {
+        return element.textContent.trim() !== '' ? true : false;
     }
 }

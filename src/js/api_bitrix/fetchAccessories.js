@@ -47,7 +47,7 @@ const transformAccessoriesData = (data) => {
 export const fetchAccessoriesData = async () => {
   try {
     const response = await fetch(
-      'https://thingproxy.freeboard.io/fetch/https://dev.r18.coffee/api/mainpage/accessories'
+      'https://dev.r18.coffee/api/mainpage/accessories'
     );
 
     console.log('Статус ответа', response.status);

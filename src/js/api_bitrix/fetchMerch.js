@@ -19,9 +19,11 @@ const transformData = (data) => {
     }
 
     const uniqueOffersArray = Object.values(uniqueOffers);
+
+    // Создаем массив цветов, сортируя его так, чтобы черный был первым
     const colors = Array.from(
       new Set(uniqueOffersArray.map((offer) => offer.PROPERTY_COLOR_REF_VALUE))
-    );
+    ).sort((a, b) => (a === '000000' ? -1 : b === '000000' ? 1 : 0));
 
     const transformedItem = {
       article: item.ID,
@@ -58,7 +60,7 @@ const transformData = (data) => {
 export const fetchMerchData = async () => {
   try {
     const response = await fetch(
-      'https://thingproxy.freeboard.io/fetch/https://dev.r18.coffee/api/mainpage/merch'
+      'https://dev.r18.coffee/api/mainpage/merch'
     );
 
     console.log('Статус ответа', response.status);

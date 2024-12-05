@@ -7,7 +7,7 @@ export async function fetchCoffeeData() {
 
     const transformedData = Object.values(data.OFFERS).flatMap((offersArray) =>
       offersArray.map((offer) => {
-        if (offer.packing === 'Фильтр-кофе') {
+        if (offer.packing === 'Фильтр') {
           offer.packing = 'filter';
         }
 
@@ -33,7 +33,12 @@ export async function fetchCoffeeData() {
           img: offer.img,
           link: '#',
           description: `Кофе R18: '${offer.title}'`,
+          // pomol:offer.pomol,
         };
+
+        // if (offer.packing === 'filter') {
+        //   transformedOffer.pomol = offer.pomol;
+        // }
 
         if (offer.packing === 'Дрип-пакет' && offer.main_offer_id) {
           transformedOffer.main_offer_id = offer.main_offer_id;

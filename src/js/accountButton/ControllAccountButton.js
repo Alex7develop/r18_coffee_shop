@@ -109,20 +109,28 @@ export default class ControllAccountButton extends ApiModals {
 
     clickLogin(e) {
         const form = this.redraw.lastActiveModal.querySelector('form');
-
+    
         // закрытие модалки вход в аккаунт
         if(e.target.closest('.modal__close')) this.redraw.closeModal(form);
-
+    
         // вход в аккаунт
         if(e.target.closest('.modal-login__button')) {
             // валидация
             this.validation([form.phone, form.password]);
-
+    
             // сбор данных и отправка на сервер (вывод в консоль)
             if((form.phone.value && !+form.phone.dataset?.invalid) 
             && (form.password.value && !+form.password.dataset?.invalid)) {
-                const formData = new FormData(form);
-                console.log(Array.from(formData));
+                const phone = form.phone.value.trim().replace(/\D/g, "").replace(/^(\d)/, '+$1');  // Преобразование телефона в формат с "+"
+                const password = form.password.value.trim(); // Пароль
+    
+                const requestData = { phone, password };
+    
+                // Логируем данные для отправки на сервер
+                console.log("Данные для отправки на сервер:", requestData);
+    
+                // Отправка данных на сервер
+                this.api.login(requestData);
             }
         }
         
@@ -130,9 +138,8 @@ export default class ControllAccountButton extends ApiModals {
         if(e.target.closest('.modal-login__recover')) {
             (async () => {
                 const modalRecover = await super.read('recover');
-
                 this.redraw.openNewModal(modalRecover);
-
+    
                 this.redraw.lastActiveModal.addEventListener('click', this.clickRecover);
                 // удаление и установка input placeholder
                 this.registerEventsInputsText(this.redraw.lastActiveModal);
@@ -141,125 +148,127 @@ export default class ControllAccountButton extends ApiModals {
     }
 
     // отправка запроса для восстановления пароля и закрытие модалки
-    clickRecover(e) {
-        // форма из модалки
-        const form = this.redraw.lastActiveModal.querySelector('form');
+   async clickRecover(e) {
+    // форма из модалки
+    const form = this.redraw.lastActiveModal.querySelector('form');
 
-        // закрытие модалки восстановление
-        if(e.target.closest('.modal__close')) this.redraw.closeModal(form);
+    // закрытие модалки восстановление
+    if(e.target.closest('.modal__close')) this.redraw.closeModal(form);
 
-        // отправка данных
-        if(e.target.closest('.modal-recover__button')) {
-            // валидация
-            this.validation([form.phone]);
+    // отправка данных
+    if(e.target.closest('.modal-recover__button')) {
+        // валидация
+        this.validation([form.phone]);
 
-            if(form.phone.value && !+form.phone.dataset?.invalid) {
-                const formData = new FormData(form);
-                
-                // -----------  !!!!!!! Отправка данных для получения ссылки на восстановление пароля
-                // -----------  !!!!!!!  const result = this.api.create(formData);
+        if(form.phone.value && !+form.phone.dataset?.invalid) {
+            const phone = form.phone.value.trim().replace(/\D/g, ""); 
+            if (phone) {
+                const requestData = { phone: `+${phone}` };
 
-                // отправка данных прошла успешно
-                if(result) {
-                    (async () => {
+                try {
+                    const response = await fetch('https://dev.r18.coffee/api/auth/recovery', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(requestData),
+                    });
+
+                    const result = await response.json();
+
+                    if (response.ok) {
+                        console.log("Запрос на восстановление отправлен:", result);
+
                         const modalRecover = await super.read('recover-success');
-        
                         this.redraw.openNewModal(modalRecover);
-        
                         this.redraw.lastActiveModal.addEventListener('click', this.clickRecoverSuccess);
-                        // удаление и установка input placeholder
+
+  
                         this.registerEventsInputsText(this.redraw.lastActiveModal);
-                    })()
-                } 
-                // сообщение пользователю о том что отправка не была успешной
-                if(!result) {
-                    const p = document.createElement('p');
-                    p.style = `
-                        position: absolute;
-                        bottom: 0; 
-                        font-family: 'SofiaSans';
-                        font-size: 0.83vw;
-                        font-weight: 300;
-                        color: rgb(255, 124, 124);
-                        translate: 0 115%;
-                    `;
-                    p.textContent = 'Что-то пошло не так. Попробуйте еще раз.'
+                    } else {
 
-                    const parent = form.parentElement;
-                    parent.style.position = 'relative';
-
-                    parent.append(p);
-
-                    setTimeout(() => {
-                        p.remove();
-                        parent.style.position = '';
-                    }, 7000)
+                        this.showErrorMessage('Что-то пошло не так. Попробуйте еще раз.');
+                    }
+                } catch (error) {
+                    console.error('Ошибка запроса:', error);
+                    this.showErrorMessage('Что-то пошло не так. Попробуйте еще раз.');
                 }
             }
-        };
+        }
     }
+}
 
-    //  информация об успешной отправке запроса для восстановления пароля и закрытие модалки
+showErrorMessage(message) {
+    const form = this.redraw.lastActiveModal.querySelector('form');
+    const p = document.createElement('p');
+    p.style = `
+        position: absolute;
+        bottom: 0; 
+        font-family: 'SofiaSans';
+        font-size: 0.83vw;
+        font-weight: 300;
+        color: rgb(255, 124, 124);
+        translate: 0 115%;
+    `;
+    p.textContent = message;
+
+    const parent = form.parentElement;
+    parent.style.position = 'relative';
+
+    parent.append(p);
+
+    setTimeout(() => {
+        p.remove();
+        parent.style.position = '';
+    }, 7000);
+}
+
+
     clickRecoverSuccess(e) {
-        // форма из модалки
+
         const form = this.redraw.lastActiveModal.querySelector('form');
 
-        // закрытие модалки восстановление
+
         if(e.target.closest('.modal__close')) this.redraw.closeModal(form);
     }
 
 
     // для событий по форме регистрации
     clickRegistration(e) {
-        // форма из модалки
         const form = this.redraw.lastActiveModal.querySelector('form');
-        
-        // закрытие модалки регистрация
+    
         if(e.target.closest('.modal__close')) this.redraw.closeModal(form);
-        
-        // отправка данных на сервер
+    
         if(e.target.closest('.modal-reg__button')) {
             const inputs = form.querySelectorAll('.modal__wr-input > input');
-
+    
             const resultsValidation = [];
-            // валидация заполненности текстовых полей
             resultsValidation.push(this.validation([...inputs]));
-            // валидация email
             resultsValidation.push(this.validationPatternEmail(form.email));
-            // валидация телефона
             resultsValidation.push(this.validationPatternPhone(form.phone));
-            // валидация чекбокса
             resultsValidation.push(this.validationCheckbox([form.confirm]));
-            // валидация пароля
             resultsValidation.push(this.validationPassword(form.password));
-
-            // resultsValidation - массив массивов, если один из массивов не пуст и
-            //  содержит значение, значит один из параметров не валиден
+    
             const totalResult = resultsValidation.some(item => item.length > 0);
-            
-            // если хоть одно поле будет не валидно в 
-            // totalResult будет true
+    
             if(totalResult) return;
-
-            
-
+    
             if(form.name.value && !+form.name.dataset?.invalid &&
                 form.phone.value && !+form.phone.dataset?.invalid &&
                 form.email.value && !+form.email.dataset?.invalid &&
                 form.password.value && !+form.password.dataset?.invalid) {
+    
+                // Сохраняем номер телефона перед отправкой
+                this.savedPhoneNumber = form.querySelector('input[name="phone"]')?.value.trim();
+                console.log("Сохранённый номер телефона:", this.savedPhoneNumber);
+    
                 const formData = new FormData(form);
-                
                 this.api.create(formData);
-                
-
-                // ОТКРЫВАЕМ ФОРМУ ДЛЯ ВВОДА КОДА ПОДТВЕРЖДЕНИЯ
+    
                 (async () => {
                     const confirmCodePopUp = await super.read('code');
-
-                    this.redraw.openNewModal(confirmCodePopUp); 
-
+                    this.redraw.openNewModal(confirmCodePopUp);
                     this.redraw.lastActiveModal.addEventListener('click', this.clickConfirmCode);
-                    // удаление и установка input placeholder
                     this.registerEventsInputsText(this.redraw.lastActiveModal);
                 })();
             }
@@ -267,31 +276,72 @@ export default class ControllAccountButton extends ApiModals {
     }
 
     clickConfirmCode(e) {
-        // форма из модалки
         const form = this.redraw.lastActiveModal.querySelector('form');
-                
-        // закрытие модалки регистрация
-        if(e.target.closest('.modal__close')) this.redraw.closeModal(form);
-
-        // отправка данных на сервер
-        if(e.target.closest('.modal-code__button')) {
+    
+        if (e.target.closest('.modal__close')) {
+            // Сохраняем номер телефона перед закрытием модального окна
+            this.savedPhoneNumber = form.querySelector('input[name="phone"]')?.value.trim();
+            console.log("Сохранённый номер телефона:", this.savedPhoneNumber);
+            this.redraw.closeModal(form);
+            return;
+        }
+    
+        if (e.target.closest('.modal-code__button')) {
             const inputs = form.querySelectorAll('.modal__wr-input > input');
+    
+            const invalidFields = [...inputs].filter(input => !input.value.trim());
+            if (invalidFields.length) {
+                alert("Заполните все обязательные поля.");
+                return;
+            }
+    
+            // Получаем номер телефона и код
+            const phone = this.savedPhoneNumber || form.querySelector('input[name="phone"]')?.value.trim();
+            const formattedPhone = phone.replace(/[^\d+]/g, '');
 
-            // валидация заполненности текстовых полей
-            const result = this.validation([...inputs]);
-            
-            // если длинна массива result больше 0
-            // значит есть не валидные значения
-            if(result.length) return;
-
-            // if(form.code.value && !+form.name.dataset?.invalid) {
-            //     const formData = new FormData(form);
-            //     console.log(Array.from(formData));
-            // }
-        };
+            const code = form.querySelector('input[name="code"]')?.value.trim();
+            console.log("Номер телефона для отправки:", phone); // Лог номера телефона
+            console.log("Код подтверждения:", code); // Лог кода подтверждения
+    
+            if (!formattedPhone || !code) {
+                alert("Отсутствуют обязательные данные (номер телефона или код).");
+                return;
+            }
+    
+            const requestData = { phone: formattedPhone, code  };
+    
+            this.sendCodeToServer(requestData);
+        }
     }
-
-
+    
+    
+    async sendCodeToServer(data) {
+        try {
+            const response = await fetch("https://dev.r18.coffee/api/auth/approvecoderegister", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(data),
+            });
+    
+            const result = await response.json();
+    
+            if (!response.ok || result.TYPE !== "SUCCESS") {
+                console.error("Ошибка подтверждения:", result);
+                alert("Ошибка: " + (result.MESSAGE || "Попробуйте снова."));
+                return;
+            }
+    
+            alert("Регистрация успешно завершена!");
+            this.redraw.closeModal();
+        } catch (error) {
+            console.error("Ошибка при отправке данных:", error);
+            alert("Не удалось подтвердить код. Проверьте соединение с интернетом.");
+        }
+    }
+    
+    
 
 
     // при фокусе поле очищается если нет value

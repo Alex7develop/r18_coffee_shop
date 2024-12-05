@@ -608,6 +608,18 @@
     width: 100%;
 }
 
+.place-order__wr-cdek-address::placeholder {
+    font-family: 'SofiaSans';
+    font-size: 1vw;
+    font-weight: 400;
+
+    color: #fff;
+}
+
+.place-order__wr-cdek-address:focus::placeholder {
+    visibility: hidden;
+}
+
 .place-order__wr-cdek-app {
     height: 17.03vw;
     width: 100%;
@@ -636,6 +648,14 @@
     font-weight: 400;
     
     color: #FFF;
+}
+
+.place-order__choice-map-address {
+    min-height: 0.99vw;
+}
+
+.place-order__choice-map-address[invalid] {
+    color: #FF7C7C;
 }
 
 .place-order__cdek-confirm-button {
@@ -1209,6 +1229,10 @@
     .place-order__wr-cdek-address {
         padding: 5.07vw 4vw 1.87vw;
     }
+
+    .place-order__wr-cdek-address::placeholder {
+        font-size: 2.93vw;
+    }
 }
 
 @media(max-width: 1200px) {
@@ -1234,6 +1258,12 @@
         font-size: 4.27vw;
         text-align: center;
         align-self: initial;
+    }
+}
+
+@media(max-width: 1200px) {
+    .place-order__choice-map-address {
+        min-height: 5.07vw;
     }
 }
 

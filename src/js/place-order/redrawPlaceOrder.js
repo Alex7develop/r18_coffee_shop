@@ -10,6 +10,11 @@ export default class RedrawPlaceOrder {
     // контейнер c навигацией по способам доставки
     this.wrReceivingNav = this.el.querySelector('.place-order__receiving-wr-list');
 
+    // Поле для ввода выбранного на карте пвз
+    this.inputCdekAddressFromMap = this.el.querySelector('.place-order__wr-cdek-address');
+    // Поле выбранного (подтвержденного) адреса
+    this.confirmedAddressPVZ = this.el.querySelector('.place-order__choice-map-address');
+
     this.allTextInputs = this.el.querySelectorAll('input[type="text"]');
     this.buttonSend = this.el.querySelector('.place-order__button-submit');
 
@@ -78,47 +83,53 @@ export default class RedrawPlaceOrder {
     this.map.classList.remove('place-order__wr-cdek-app_load');
   }
 
-  // КАРТА С ПВЗ
+// ------------------------------------------------------------------------
+
+  // START КАРТА С ПВЗ
   initMap(points) {
     ymaps.ready(function () {
       // Создаем карту с указанными центром и уровнем масштабирования
-      let myMap = new ymaps.Map("map", {
+      const myMap = new ymaps.Map("map", {
         center: [55.751574, 37.573856],
-        controls: [],
+        controls: [],//"searchControl"
         zoom: 9
-      }),
+      });
 
-        // Создаем кластеризатор с заданными опциями
-        clusterer = new ymaps.Clusterer({
-          clusterHideIconOnBalloonOpen: false,
-          geoObjectHideIconOnBalloonOpen: false
-        });
+      // Создаем кластеризатор с заданными опциями
+      let clusterer = new ymaps.Clusterer({
+        clusterHideIconOnBalloonOpen: false,
+        geoObjectHideIconOnBalloonOpen: false
+      });
 
       // Переопределяем метод createCluster для кластеризатора
       clusterer.createCluster = function (center, geoObjects) {
+
         // Создаем кластерную метку с помощью стандартной реализации метода
         let clusterPlacemark = ymaps.Clusterer.prototype.createCluster.call(
           this,
           center,
           geoObjects
-        ),
+        );
 
-          hasViolet = false,
-          hasGreen = false;
+        // -----------------------------------------------------------
+        let hasViolet = false;
+        let hasGreen = false;
 
         // Проверяем, какие цвета меток присутствуют в кластере
         for (let i = 0, l = geoObjects.length; i < l; i++) {
-          let placemarkPreset = geoObjects[i].options.get("preset");
+
+          let placemarkPreset = geoObjects[i].options.get("preset"); //
+
           if (placemarkPreset === "islands#greenIcon") {
             hasGreen = true;
           } else if (placemarkPreset === "islands#violetIcon") {
             hasViolet = true;
           }
+
         }
 
         // Устанавливаем цвет кластера на основе приоритета цветов
         let clusterPreset;
-
         if (hasGreen) {
           clusterPreset = "islands#greenClusterIcons";
         } else if (hasViolet) {
@@ -127,28 +138,39 @@ export default class RedrawPlaceOrder {
 
         // Устанавливаем найденный пресет для кластера
         clusterPlacemark.options.set("preset", clusterPreset);
+        // ----------------------------------------------------------------
+
+        
+
         return clusterPlacemark;
+
+        
       };
 
       // Функция для создания данных балуна метки
-      let getPointData = function (title, address, workTime, phone, index) {
+      const getPointData = function (title, address, workTime, phone, index) {
         return {
           balloonContentBody: `<strong>${title}</strong><br>` + address + "<br>" + phone + "<br>" + workTime,
-          clusterCaption: "метка <strong>" + index + "</strong>"
+          hintContent: address,
         };
-      },
+      };
 
-        allowColors = ["green", "violet"], // Разрешенные цвета меток green, violet
-        // Функция для создания опций метки на основе ее цвета
-        getPointOptions = function (point) {
-          return {
-            preset: "islands#" + point.color + "Icon"
-          };
-        },
-        // Массив точек с координатами и цветами
+      const allowColors = ["green", "violet"]; // Разрешенные цвета меток green, violet
 
+      // Функция для создания опций метки на основе ее цвета
+      const getPointOptions = function (point) {
+        return {
+          preset: "islands#" + point.color + "Icon"
+        };
+      };
 
-        geoObjects = [];
+      // Функция для задания кастомной иконки для метки
+      const getPointIcon = function (point) {
+        return point.icon;
+      }
+
+      // Массив точек с координатами и цветами
+      const geoObjects = [];
 
       for (let i = 0, len = points.length; i < len; i++) {
         const address = points[i].location.address_full;
@@ -157,22 +179,69 @@ export default class RedrawPlaceOrder {
         const title = points[i].title;
         const coords = [`${points[i].location.latitude}`, `${points[i].location.longitude}`];
 
-        geoObjects[i] = new ymaps.Placemark(
+        const myPlacemark = new ymaps.Placemark(
           coords, // points[i]["coords"]
-          getPointData(title, address, workTime, phone, i),
-          getPointOptions(points[i]) // передаем объект с пунктом, из него функция возьмет цвет
+          getPointData(title, address, workTime, phone, i), // текст балуна
+          // getPointOptions(points[i]), // цвет
+          getPointIcon(points[i]) // кастомная иконка
         );
+
+        myPlacemark.events.add('click', function (e) {
+          const value = e.get('target').properties.get('hintContent');
+          const input = document.querySelector('.place-order__wr-cdek-address');
+          input.value = value;
+        })
+
+        geoObjects[i] = myPlacemark;
       }
 
       // Добавляем все метки в кластеризатор
       clusterer.add(geoObjects);
       // Добавляем кластеризатор на карту
       myMap.geoObjects.add(clusterer);
+
+
+      // НОВЫЙ ЦЕНТР КАРТЫ ПО ВВЕДЕННОМУ АДРЕСУ
+      const newAddressInput = document.querySelector('.place-order__wr-cdek-address');
+      let timeOutId;
+      const newCenter = (e) => {
+        clearTimeout(timeOutId);
+
+        timeOutId = setTimeout(() => {
+          const myGeocoder = ymaps.geocode(e.target.value);
+          myGeocoder.then(
+            function (res) {
+                const coords = res.geoObjects.get(0).geometry.getCoordinates()
+                myMap.setCenter(coords, 10);
+            },
+            function (err) {
+                console.log('Ошибка поиска координат');
+            }
+          );
+        }, 2000)
+      }
+
+      newAddressInput.addEventListener('input', newCenter);
     });
 
     // скрываем лоадер
     this.hideLoader();
   }
+
+  confirmAddressPVZ() {
+    const value = this.inputCdekAddressFromMap.value;
+
+    if(value) {
+      if(this.confirmedAddressPVZ.hasAttribute('invalid')) {
+        this.confirmedAddressPVZ.removeAttribute('invalid')
+      }
+      this.confirmedAddressPVZ.textContent = value;
+      
+    }
+  }
+  // END КАРТА С ПВЗ
+
+// ------------------------------------------------------------------------
 
 
   // START УПРАВЛЕНИЕ ФОРМАМИ ПОЛУЧЕНИЯ
@@ -257,6 +326,9 @@ export default class RedrawPlaceOrder {
   }
 
 
+// ------------------------------------------------------------------------
+
+
   // START SELECT с адресами
 
   // выбор адреса (SELECT)
@@ -276,7 +348,7 @@ export default class RedrawPlaceOrder {
 
   // END SELECT с адресами
 
-
+// ------------------------------------------------------------------------
 
   // ---- START ОПЛАТА
 
@@ -316,7 +388,7 @@ export default class RedrawPlaceOrder {
   // ---- END ОПЛАТА
 
 
-
+// ------------------------------------------------------------------------
 
   // START РАБОТА С INPUT ФОРМ
 
@@ -350,13 +422,18 @@ export default class RedrawPlaceOrder {
   // END РАБОТА С INPUT ФОРМ
 
 
-
+// ------------------------------------------------------------------------
 
 
   // ПОДСВЕТКА НЕ ВАЛИДНЫХ ДАННЫХ ПРИ ОТПРАВКЕ
   // подсвечивает не валидные текстовые инпуты
   setInvalidInputText(input) {
     input.classList.add('place-order__form-input_invalid');
+  }
+  // пвз адрес не подтвержден
+  setInvalidAddressPVZ() {
+    this.confirmedAddressPVZ.textContent = 'Подтвердите, пожалуйста, адрес.';
+    this.confirmedAddressPVZ.setAttribute('invalid', '');
   }
   // подсвечивает если не выбран способ оплаты
   setInvalidPayment() {
